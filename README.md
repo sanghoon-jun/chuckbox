@@ -2,6 +2,17 @@
 
 Overall size: **25 1/2" W × 17" D × 25 1/4" H** (24 3/4" frame + 1/2" cooktop). All units are inches.
 
+| Closed | Open, with items | Frame, shelves + dividers |
+|---|---|---|
+| ![Closed](images/closed.png) | ![Open with items](images/open.png) | ![Frame](images/frame.png) |
+
+Re-render after a design change:
+```sh
+openscad -o images/closed.png --imgsize=1000,900 --viewall --autocenter --colorscheme Tomorrow --camera=0,0,0,65,0,30,0 -D door_angle=0 chuckbox.scad
+openscad -o images/open.png --imgsize=1000,900 --viewall --autocenter --colorscheme Tomorrow --camera=0,0,0,65,0,330,0 -D door_angle=110 -D show_panels=false chuckbox.scad
+openscad -o images/frame.png --imgsize=1000,900 --viewall --autocenter --colorscheme Tomorrow --camera=0,0,0,65,0,330,0 -D show_door=false -D show_panels=false -D show_items=false chuckbox.scad
+```
+
 ## Files
 - `chuckbox.scad`: parametric OpenSCAD model. Bay heights, dividers and materials are parameters; frame height and the cut list are calculated from them. Press F5 to preview. The console prints the cut list, and the model stops with an error if an item no longer fits.
 - `items.md`: the items the box has to hold, with their dimensions.
