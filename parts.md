@@ -1,107 +1,107 @@
 # Parts & Materials
 
-Bill of materials for the build. The stored items (stove, cook set, etc.) are not included; see `items.md` for those. Quantities come from the current model in `chuckbox.scad` (25 1/2 × 17 × 25 1/4").
+Bill of materials for the build. The stored items (stove, cook set, etc.) are not included; see `items.md` for those. Quantities come from the current model in `chuckbox.scad` (627 × 421 × 555 mm). All sizes in mm.
 
 Costs are rough 2026 estimates in USD, not quotes. Check current prices before ordering.
 
 ## Aluminum extrusion
 
-Supplier slot types: **A** = 1 slot, **B** = 2 adjacent slots, **C** = 2 opposite slots, **D** = 3 slots, plain 1010 = 4 slots. Each member gets only the slots it needs; this design uses no D or 4-slot profiles.
+TNUTZ **EXM-2020**: 20 × 20 mm, 4 open T-slots, 0.454 kg/m, Ix = Iy = 0.67 cm⁴. Cut lengths are on the supplier's 1/16" grid. There are no crossbars; the plywood spans between the rails on its own.
 
-| Part | Type | Qty | Length | Open slots: what they're for |
+| Part | Qty | Length | Order as | Use |
 |---|---|---|---|---|
-| Post, front-left | C | 1 | 24 3/4" | Back face: side panel. Front face: pivot hinges |
-| Posts, front-right / back-left / back-right | B | 3 | 24 3/4" | Side panel + back panel. On the front-right post: side panel + outer face for the latch keeper |
-| Bottom front + back rails, top front rail | A | 3 | 23 1/2" | Top face. Back rail: back panel. Top front rail: cooktop bolts. Bottom front rail: unused (A is the minimum) |
-| Top back rail | C | 1 | 23 1/2" | Top: cooktop bolts. Bottom: back panel |
-| Crossbars, base + under middle shelf | A | 6 | 23 1/2" | Top: shelf bolts |
-| Crossbars, under top shelf + under cooktop | C | 6 | 23 1/2" | Top: shelf/cooktop bolts. Bottom: divider brackets |
-| Bottom side rails | A | 2 | 15" | Top: side panel |
-| Top side rails + shelf side rails | C | 6 | 15" | Top + bottom: side panels (top rails: cooktop bolts + panel) |
+| Posts | 4 | 542.9 mm | 21 3/8" | Corners. Front-left: pivot hinges. Front-right: latch keeper |
+| Front + back rails, top and bottom | 4 | 587.4 mm | 23 1/8" | Bottom front: base bolts. Bottom back: back panel + base brackets. Top: cooktop bolts + back panel |
+| Side rails, top and bottom | 4 | 381 mm | 15" | Side panels; top rails also take cooktop bolts |
+| Shelf side rails | 4 | 381 mm | 15" | Side panels above and below; shelf brackets on the inner face |
+| **Total** | 16 pcs | 7.57 m (~298") | | at ~$0.15–0.22/in: **$45–65** |
+| Cut to length (if not cutting yourself) | 16 cuts | | | ~$1.50–2.50/cut: $24–40 |
 
-| Order by type | Qty × length | Inches |
-|---|---|---|
-| 1010-A | 9 × 23 1/2", 2 × 15" | 241 1/2" |
-| 1010-B | 3 × 24 3/4" | 74 1/4" |
-| 1010-C | 1 × 24 3/4", 7 × 23 1/2", 6 × 15" | 279 1/4" |
-| **Total** | 28 pcs | ~595" (~50 ft) at ~$0.20–0.26/in: **$120–155** |
-| Cut to length (if not cutting yourself) | 28 cuts at ~$1.50–2.50/cut | $42–70 |
-
-Smooth faces end up on the outside of the box, so there's nothing to snag or collect dirt, and the profiles weigh slightly less. Per-inch prices for the A/B/C types may differ from standard 1010; check with your supplier.
+Unused slots stay open. Slot covers are optional, under Optional below.
 
 ## Frame joinery
 
-There are 48 joints, one at each end of the 24 rails. The model uses end fastening, so the T-slots stay free for the wall panels: tap each rail end, drill an access hole in the mating post or side rail, and bolt through.
+There are 24 joints, one at each end of the 12 rails. The rail ends are tapped M5 and bolted through an access hole in the mating post, so the T-slots stay free for the wall panels.
 
 | Part | Qty | Spec | Est. cost |
 |---|---|---|---|
-| Button-head bolts | 48 (buy 50) | 1/4-20 × 3/4", stainless | $12–15 |
-| End taps | 48 | 1/4-20 tap in the profile's center hole | DIY: $15–25 (tap + bits), or service: ~$1.50–2 each ($72–96) |
-| Access holes | 48 | Wrench/driver access in the mating member | DIY: incl. above, or service: ~$2–3 each ($96–144) |
+| Button-head bolts | 24 (buy 25) | M5 × 12, stainless | $5–8 |
+| End taps | 24 | M5 tap in the profile's 4.2 mm center hole | DIY: $10–20 (tap + bits), or service: ~$1.50–2 each ($36–48) |
+| Access holes | 24 | Wrench/driver access in the mating post | DIY: incl. above, or service: ~$2–3 each ($48–72) |
 
-## Shelf & cooktop mounting
+## Base, shelf & cooktop mounting
 
-Countersunk bolts go through the plywood into T-nuts in the crossbar and rail slots, keeping the surfaces flush.
+- **Base:** Rests on the bottom front rail and the back rail's lip. Bolted to the front rail and held at the back by 2 angle brackets.
+- **Shelves:** Each rests on its shelf side rails, held by 4 angle brackets (2 per side) bolted into the rails' inner slots and screwed up into the plywood.
+- **Cooktop:** Rests on the top perimeter rails and is bolted to them.
 
 | Part | Qty | Spec | Est. cost |
 |---|---|---|---|
-| Flat-head (countersunk) bolts | 32 (buy 50) | 1/4-20 × 1", stainless: 3 shelves × 6 + cooktop × 14 | $12–15 |
-| Drop-in T-nuts, 10-series | 40 (buy 50) | 1/4-20: 32 for shelves/cooktop + 8 for door hardware | $15–25 generic, ~$40–50 name brand |
+| Flat-head (countersunk) bolts | 13 (buy 25) | M5 × 16, stainless: base 3 (front rail), cooktop 10 (3 front, 3 back, 2 per side) | $5–8 |
+| Angle brackets | 10 | 2020 L-bracket, 20 × 20 mm legs: 8 for shelves, 2 for base | $8–12 |
+| Bracket bolts + wood screws | 10 + 20 | M5 × 10 button head into a T-nut; #6 × 3/8" (3.5 × 10 mm) wood screws into the plywood | $5–8 |
+| Drop-in T-nuts, 20-series | 31 (buy 50) | M5: 13 for base/cooktop bolts, 10 for brackets, 8 for door hardware | $10–20 |
 
 ## Plywood
 
+Baltic birch is sold in metric thicknesses, so it matches the model directly.
+
 | Part | Qty | Spec | Est. cost |
 |---|---|---|---|
-| 1/2" birch plywood | 1 sheet, 4' × 4' | Cooktop 25 1/2 × 17, shelves 3 × 23 1/2 × 15 | $45–70 |
-| 1/4" birch plywood | 1 sheet, 4' × 8' or 5' × 5' Baltic | Back 24 × 23 1/4, sides 6 pcs, dividers 4 pcs, door 25 3/8 × 24 5/8 (~16 ft² total) | $40–60 |
+| 12 mm Baltic birch | 1 sheet, 5' × 5' (or a 4' × 4' piece) | Base, 2 shelves, cooktop | $60–90 |
+| 6 mm Baltic birch | 1 sheet, 5' × 5' | Back, 6 side panels, 4 dividers, door (~1.3 m²) | $35–55 |
 
 Plywood cut list:
 
-| Piece | Thickness | Qty | Size |
+| Piece | Thickness | Qty | Size (mm) |
 |---|---|---|---|
-| Base + shelves | 1/2" | 3 | 23 1/2 × 15 |
-| Cooktop | 1/2" | 1 | 25 1/2 × 17 |
-| Back | 1/4" | 1 | 24 × 23 1/4 |
-| Sides (per side, bottom → top) | 1/4" | 2 each | 15 1/2 × 7 1/4, 15 1/2 × 9 1/2, 15 1/2 × 5 1/2 |
-| Dividers, middle bay | 1/4" | 2 | 15 × 8 1/2 |
-| Dividers, top bay | 1/4" | 2 | 15 × 4 1/2 |
-| Door | 1/4" | 1 | 25 3/8 × 24 5/8 |
+| Base (over front rail, onto back rail) | 12 | 1 | 587.4 × 406.5 |
+| Shelves (onto both shelf side rails) | 12 | 2 | 598.4 × 381 |
+| Cooktop | 12 | 1 | 627.4 × 421 |
+| Back | 6 | 1 | 597.4 × 512.9 |
+| Sides (per side, bottom → top) | 6 | 2 each | 391 × 158.8, 391 × 217.2, 391 × 116.9 |
+| Dividers, middle bay | 6 | 2 | 381 × 215.2 |
+| Dividers, top bay | 6 | 2 | 381 × 114.9 |
+| Door | 6 | 1 | 624.4 × 539.9 |
 
-Panel sizes include `slot_engage` (1/4") on each edge that sits in a slot. Measure how far your sheets actually go into the slot, then set `slot_engage` to match before cutting.
+Panel sizes include `slot_engage` (5 mm) on each edge that sits in a slot. Measure how far your sheets actually go into the slot, then set `slot_engage` to match before cutting.
 
-The 1/2" pieces fit a 4' × 4' sheet in three rows: two shelves side by side, then the cooktop, then the third shelf. Total height is about 47.4" with kerfs.
+Wherever plywood rests on a rail whose top slot holds a wall panel, it stops 1.5 mm short of the panel. That leaves about 5.5 mm of bearing.
 
-**Slot fit:** The 10-series slot opening is 0.256". 6 mm Baltic birch (0.236") fits better than domestic "1/4 inch" sheets, which can run about 0.20".
+The 12 mm pieces fit a 4' × 4' (1220 mm) square in two columns: base and both shelves stacked on the left (about 1177 mm tall with kerfs), and the cooktop turned sideways on the right (421 mm of the remaining 619 mm).
+
+**Slot fit:** The 2020 slot opening is about 6.2 mm (check the supplier spec). 6 mm Baltic birch runs 5.8–6.2 mm, so it should be a snug fit without gasket. Test-fit a scrap first; sand the edges if a panel binds.
 
 ## Walls & dividers
 
 | Part | Qty | Spec | Est. cost |
 |---|---|---|---|
-| Panel gasket / edge trim | ~32 ft | Takes up slack between the 1/4" panels and the T-slot so they don't rattle | $15–25 |
-| Corner braces for dividers | 16 | 1" L-brackets + #6 × 1/2" wood screws, 4 per divider | $10–15 |
+| Corner braces for dividers | 16 | 25 mm L-brackets + #6 × 3/8" wood screws: 2 into the plywood below and 2 into the plywood above, per divider | $10–15 |
 
 ## Door
 
 | Part | Qty | Spec | Est. cost |
 |---|---|---|---|
-| Pivot hinges | 2 | 10-series compatible, mounted to the front-left post via T-nuts | $20–40 |
+| Pivot hinges | 2 | 2020-compatible, mounted to the front-left post with M5 T-nuts | $10–25 |
 | Draw latch | 1 | Stainless toggle/draw latch, right side | $8–15 |
 
 ## Optional
 
 | Part | Qty | Spec | Est. cost |
 |---|---|---|---|
-| Extrusion end caps | 4 | 10-series, bottom ends of the posts | $4–8 |
-| Carry handles | 2 | Side-mounted, via T-nuts | $20–30 |
+| Slot covers | ~10 m | 6 mm slot cover strip for unused outer slots: cleaner look, nothing to snag | $10–20 |
+| Panel gasket | ~9 m | Only if the 6 mm panels rattle in the slots | $10–15 |
+| Extrusion end caps | 4 | 2020, bottom ends of the posts | $3–6 |
+| Carry handles | 2 | Side-mounted on the top side rails with M5 T-nuts | $15–25 |
 | Wood finish | 1 qt | Spar urethane or similar: water and heat resistance for the cooktop | $20–25 |
-| Second draw latch | 1 | Keeps the 24" door tight at top and bottom in transit | $8–15 |
+| Second draw latch | 1 | Keeps the door tight at top and bottom in transit | $8–15 |
 
 ## Estimated total
 
 | Scenario | Est. cost |
 |---|---|
-| DIY cutting + tapping | ~$310–460 |
-| Supplier cuts + machines everything | ~$510–745 |
-| Optional add-ons | +$50–80 |
+| DIY cutting + tapping | ~$210–340 |
+| Supplier cuts + machines everything | ~$310–480 |
+| Optional add-ons | +$65–105 |
 
-Most of the difference is machining. Doing the 48 end taps and access holes yourself saves about $150–220.
+Most of the difference is machining. Doing the 24 end taps and access holes yourself saves about $75–100.

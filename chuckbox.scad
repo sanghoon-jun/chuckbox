@@ -1,34 +1,31 @@
-// T-slot chuck box: 1" (10-series) aluminum extrusion frame
-// Units: inches. For mm export, wrap the top-level call in scale(25.4).
+// T-slot chuck box: 2020 (20 x 20 mm) aluminum extrusion frame, TNUTZ EXM-2020
+// Units: mm. Item sizes come from product specs in inches and are converted with IN.
+// The box is sized from the items: width, depth and bay heights are derived, then
+// extrusion lengths are rounded up to the supplier's 1/16" cut grid.
 //
 // Coordinates: X = width (left->right), Y = depth (front->back), Z = height.
 // Front face (door side) is at Y = 0.
 
-/* [Overall exterior] */
-W = 25.5;
-D = 17;
-// Frame height H is derived from the bay heights below; cooktop sits on top.
+IN = 25.4;
+LB = 0.4536;
 
 /* [Materials] */
-ext         = 1.0;    // 10-series profile size
-shelf_t     = 0.5;    // 1/2" birch, base + shelves (load-bearing)
-top_t       = 0.5;    // 1/2" birch cooktop: carries stove + food (load-bearing)
-panel_t     = 0.25;   // 1/4" birch, side + back walls (nominal; real sheets run ~0.22)
-slot_engage = 0.25;   // how far wall panels sit into the T-slot past the face
-door_t      = 0.25;   // door panel thickness
-door_gap    = 0.0625; // reveal around the door edge
-len_step    = 1/16;   // supplier cut-length increment for extrusion
+ext         = 20;     // 2020 profile size
+slot_open   = 6.2;    // slot opening (check against supplier spec)
+shelf_t     = 12;     // 12 mm Baltic birch: base + shelves (load-bearing)
+top_t       = 12;     // 12 mm Baltic birch cooktop: carries stove + food (load-bearing)
+panel_t     = 6;      // 6 mm Baltic birch: side + back walls, dividers
+slot_engage = 5;      // how far wall panels sit into the slot past the extrusion face
+door_t      = 6;      // door panel thickness
+door_gap    = 1.5;    // reveal around the door edge
+len_step    = IN/16;  // supplier cut-length increment for extrusion (1/16")
 
 /* [Layout] */
-clearance = 0.25;     // per side, around stored items
-// Clear bay heights, bottom -> top
-bay_stove = 6.25;     // stove 5.7 + 0.5 = 6.2, up to 1/16" grid (heaviest, least used -> low)
-bay_gas   = 8.5;      // propane 8 + 0.5; cook set shares this bay
-bay_top   = 4.5;      // 4" bin + 0.5 (dish set 3" also fits)
-// Vertical dividers (1/4" ply, front-to-back) per bay, bottom -> top.
+clearance = 6;        // per side, around stored items
+// Vertical dividers (6 mm ply, front-to-back) per bay, bottom -> top.
 // A number = that many evenly spaced dividers.
 // A list = widths of the compartments left -> right; the last compartment gets the rest.
-dividers  = [0, [11.5, 5], [9.5, 6]];
+dividers  = [0, [280, 115], [230, 152]];
 // middle: cook set | propane x2 (front-to-back) | teapot
 // top:    dish set | free | bin
 
@@ -38,153 +35,166 @@ show_door   = true;
 show_items  = true;
 door_angle  = 100;    // 0 = closed
 
-// ---------- Stored items (W x D x H) ----------
-stove   = [22.6, 13.7, 5.7];    // Coleman Triton+ (InstaStart), lid closed, lying flat
-cook_d  = 10.3;                 // Stanley Even-Heat Camp Pro, packed
-cook_h  = 6.7;
-cyl_d   = 3.88;                 // Coleman 1 lb propane
-cyl_h   = 8;
+// ---------- Stored items (spec inches -> mm) ----------
+stove   = [22.6, 13.7, 5.7] * IN;   // Coleman Triton+ (InstaStart), lid closed, lying flat
+cook_d  = 10.3 * IN;                // Stanley Even-Heat Camp Pro, packed
+cook_h  = 6.7 * IN;
+cyl_d   = 3.88 * IN;                // Coleman 1 lb propane
+cyl_h   = 8 * IN;
 cyl_qty = 2;
-tea_d   = 5.5;                  // MSR Pika 1L teapot
-tea_h   = 3.5;
-dish_d  = 8.5;                  // dish set, top bay, left compartment
-dish_h  = 3;
-bin     = [7, 14.5, 4];         // storage bins, top bay, one per compartment, rightmost first
+tea_d   = 5.5 * IN;                 // MSR Pika 1L teapot
+tea_h   = 3.5 * IN;
+dish_d  = 8.5 * IN;                 // dish set, top bay, left compartment
+dish_h  = 3 * IN;
+bin     = [7, 14.5, 4] * IN;        // storage bins, top bay, one per compartment, rightmost first
 bin_qty = 1;
+// Item weights, kg (bin: TBD)
+item_kg = 8.5*LB + 8.2*LB + cyl_qty*2*LB + 5.2/16*LB + 60/16*LB;
 
-// ---------- Derived ----------
-bays    = [bay_stove, bay_gas, bay_top];
-n_bays  = len(bays);
-// Z of the rail/crossbar level under bay i (level 0 = base, level n_bays = top rails)
-function level_z(i) = i == 0 ? 0 : level_z(i - 1) + ext + shelf_t + bays[i - 1];
-function bay_floor(i) = level_z(i) + ext + shelf_t;
-H       = level_z(n_bays) + ext;
+// ---------- Material weights ----------
+al_kg_m   = 0.454;    // EXM-2020
+ply_kg_m3 = 680;      // Baltic birch
+hw_kg     = 0.9;      // bolts, T-nuts, brackets, hinges, latch, gasket (estimate)
+
+// ---------- Derived size ----------
+function snap(x) = ceil(x/len_step - 1e-6) * len_step;   // round up to the cut grid
 function on_grid(x) = abs(x/len_step - round(x/len_step)) < 1e-6;
-function gcd(a, b) = b == 0 ? a : gcd(b, a % b);
-// Inches as a fraction to the nearest 1/16, e.g. 24.75 -> 24 3/4"
-function frac(x) =
-    let (w = floor(x + 1e-6), n = round((x - w)*16), g = gcd(n, 16))
-    n == 0 ? str(w, "\"") : w == 0 ? str(n/g, "/", 16/g, "\"") : str(w, " ", n/g, "/", 16/g, "\"");
-inner_w = W - 2*ext;
-inner_d = D - 2*ext;
-crossbar_ys = [ext, D/2 - ext/2, D - 2*ext];
+c2 = 2*clearance;
 
-assert(inner_w >= stove[0] + 2*clearance, "Too narrow for stove");
-assert(inner_d >= stove[1] + 2*clearance, "Too shallow for stove");
-assert(bay_stove >= stove[2] + 2*clearance, "Stove bay too short");
-assert(bay_gas >= cyl_h + 2*clearance, "Gas bay too short for cylinders");
-assert(bay_gas >= cook_h + 2*clearance, "Gas bay too short for cook set");
-assert(inner_d >= cook_d + 2*clearance, "Gas bay too shallow for cook set");
-assert(bay_top >= bin[2] + 2*clearance, "Top bay too short for bins");
-assert(inner_d >= bin[1] + 2*clearance, "Top bay too shallow for bins");
+// Rails span the inside, so they set the inside size directly
+inner_w = snap(stove[0] + c2);
+inner_d = snap(max(stove[1] + c2, bin[1] + c2, cook_d + c2, dish_d + c2,
+                   cyl_qty*cyl_d + (cyl_qty + 1)*clearance));
+W = inner_w + 2*ext;
+D = inner_d + 2*ext;
+
+// Clear bay heights, bottom -> top, from the tallest item in each bay.
+// Posts are rounded up to the cut grid; the extra goes to the top bay.
+bays_min = [stove[2] + c2,                         // stove (heaviest, least used -> low)
+            max(cyl_h, cook_h, tea_h) + c2,         // propane, cook set, teapot
+            max(bin[2], dish_h) + c2];              // bin, dish set
+n_bays = len(bays_min);
+function vsum(v, n) = n <= 0 ? 0 : v[n - 1] + vsum(v, n - 1);
+H_raw = n_bays*shelf_t + vsum(bays_min, n_bays) + ext;
+H     = snap(H_raw);
+bays  = [for (i = [0 : n_bays - 1]) bays_min[i] + (i == n_bays - 1 ? H - H_raw : 0)];
+
+// Z of the rail level under bay i (level 0 = base, level n_bays = top rails).
+// Plywood sits on top of each level's rails; a bay's clear height runs from its
+// plywood up to the underside of the plywood above (no crossbars).
+function level_z(i) = i == 0 ? 0 : level_z(i - 1) + shelf_t + bays[i - 1];
+function bay_floor(i) = level_z(i) + ext + shelf_t;
+
+// Plywood overlapping a rail stops 1.5 mm short of the wall panel in that rail's slot
+panel_gap = ext/2 + panel_t/2 + 1.5;
+// Base runs over the front rail and onto the back rail
+base_d  = D - panel_gap;
+// Shelves span side to side, resting on the shelf side rails, plus angle brackets
+shelf_w = W - 2*panel_gap;
+bracket = [20, 20, 3];   // 2020 angle bracket: width along rail, leg length, thickness
+bracket_ys = [D/4, 3*D/4];
+
+function in_str(x) =     // mm -> inches as a fraction to the nearest 1/16
+    let (t = x/IN, w = floor(t + 1e-6), n = round((t - w)*16), g = gcd(n, 16))
+    n == 0 ? str(w, "\"") : w == 0 ? str(n/g, "/", 16/g, "\"") : str(w, " ", n/g, "/", 16/g, "\"");
+function gcd(a, b) = b == 0 ? a : gcd(b, a % b);
+function mm(x) = str(round(x*10)/10);
+
+// ---------- Fit checks ----------
 // Top bay: compartment 0 = dish set, rightmost bin_qty compartments = one bin each
 function bin_comps() = [for (k = [n_dividers(dividers[2]) - bin_qty + 1 : n_dividers(dividers[2])]) k];
-assert(bay_top >= dish_h + 2*clearance, "Top bay too short for dish set");
-assert(comp_w(2, 0) >= dish_d + 2*clearance, "Dish set compartment too narrow");
+assert(comp_w(2, 0) >= dish_d + c2, "Dish set compartment too narrow");
 assert(n_dividers(dividers[2]) >= bin_qty, "Top bay needs one compartment per bin");
 for (k = bin_comps())
-    assert(comp_w(2, k) >= bin[0] + 2*clearance, str("Bin compartment ", k, " too narrow"));
+    assert(comp_w(2, k) >= bin[0] + c2, str("Bin compartment ", k, " too narrow"));
 // Middle bay: compartment 0 = cook set, 1 = all propane cylinders in a front-to-back row, 2 = teapot
 assert(n_dividers(dividers[1]) >= 2, "Gas bay needs 3 compartments");
-assert(comp_w(1, 2) >= tea_d + 2*clearance, "Teapot compartment too narrow");
-assert(comp_w(1, 0) >= cook_d + 2*clearance, "Cook set compartment too narrow");
-assert(comp_w(1, 1) >= cyl_d + 2*clearance, "Propane compartment too narrow");
-assert(inner_d >= cyl_qty*cyl_d + (cyl_qty + 1)*clearance, "Propane compartment too shallow");
+assert(comp_w(1, 0) >= cook_d + c2, "Cook set compartment too narrow");
+assert(comp_w(1, 1) >= cyl_d + c2, "Propane compartment too narrow");
+assert(comp_w(1, 2) >= tea_d + c2, "Teapot compartment too narrow");
+// Shelf brackets stick down into the bay below at the side walls
+assert(bays[0] - stove[2] - bracket[2] >= clearance, "Stove hits the shelf brackets");
 
-// ---------- 10-series profile (simplified) ----------
-// Supplier slot types: A = 1 slot, B = 2 adjacent, C = 2 opposite, D = 3, STD = 4.
-// Each member opens only the faces it needs: a panel edge, shelf/cooktop bolts (+z),
-// divider brackets (-z), hinge or latch. Joints are end-tapped, so they need no slot.
-
-// local profile faces in rotate() order: +x, +y, -x, -y
-module profile_1010(mask = [1, 1, 1, 1]) {
-    open  = 0.256;   // slot opening
-    lip   = 0.087;   // lip thickness
-    cav_w = 0.45;    // slot cavity width
-    cav_d = 0.18;    // slot cavity depth below lip
+// ---------- 2020 profile (simplified, 4 slots) ----------
+module profile_2020() {
+    lip   = 1.8;    // lip thickness
+    cav_w = 7.6;    // slot cavity width
+    cav_d = 4.3;    // slot cavity depth below lip
     difference() {
         square(ext, center=true);
-        for (i = [0:3]) if (mask[i]) rotate(i*90) {
-            translate([ext/2 - lip - 0.01, -open/2]) square([lip + 0.02, open]);
+        for (i = [0:3]) rotate(i*90) {
+            translate([ext/2 - lip - 0.01, -slot_open/2]) square([lip + 0.02, slot_open]);
             translate([ext/2 - lip - cav_d, -cav_w/2]) square([cav_d, cav_w]);
         }
-        circle(d=0.205, $fn=24);
+        circle(d=4.2, $fn=24);   // tapped M5 at the ends
     }
 }
 
-// World face each local profile face points to, per bar axis (see bar placement rotations)
-face_map = [["+x", "+y", "-x", "-y"],    // z: posts
-            ["-z", "+y", "+z", "-y"],    // x: rotate([0, 90, 0])
-            ["+x", "-z", "-x", "+z"]];   // y: rotate([-90, 0, 0])
-function axis_idx(a) = a == "z" ? 0 : a == "x" ? 1 : 2;
-function has(v, x) = len([for (e = v) if (e == x) 1]) > 0;
-function slot_mask(axis, slots) = [for (f = face_map[axis_idx(axis)]) has(slots, f) ? 1 : 0];
-function slot_type(m) =
-    let (n = m[0] + m[1] + m[2] + m[3])
-    n == 1 ? "A" : n == 3 ? "D" : n == 4 ? "STD" :
-    n == 2 ? ((m[0] && m[2]) || (m[1] && m[3]) ? "C" : "B") : "none";
+module ext_bar(len) color("Silver") linear_extrude(len) profile_2020();
 
-module ext_bar(len, mask) color("Silver") linear_extrude(len) profile_1010(mask);
-
-// Each bar is placed by the min corner of its 1x1 cross-section.
-module bar(axis, x, y, z, len, slots) {
-    m = slot_mask(axis, slots);
-    if (axis == "x")      translate([x, y + ext/2, z + ext/2]) rotate([0, 90, 0]) ext_bar(len, m);
-    else if (axis == "y") translate([x + ext/2, y, z + ext/2]) rotate([-90, 0, 0]) ext_bar(len, m);
-    else                  translate([x + ext/2, y + ext/2, z]) ext_bar(len, m);
+// Each bar is placed by the min corner of its 20x20 cross-section.
+module bar(axis, x, y, z, len) {
+    if (axis == "x")      translate([x, y + ext/2, z + ext/2]) rotate([0, 90, 0]) ext_bar(len);
+    else if (axis == "y") translate([x + ext/2, y, z + ext/2]) rotate([-90, 0, 0]) ext_bar(len);
+    else                  translate([x + ext/2, y + ext/2, z]) ext_bar(len);
 }
 
-// ---------- Frame members: [name, axis, x, y, z, length, open faces] ----------
-function divided_below(i) = i > 0 && n_dividers(dividers[i - 1]) > 0;
-
+// ---------- Frame members: [name, axis, x, y, z, length] ----------
 members = concat(
-    // Corner posts: side panel edges (+/-y), back panel edge (+/-x),
-    // pivot hinges on the front-left front face, latch keeper on the front-right outer face
-    [["post front-left",  "z", 0,     0,     0, H, ["+y", "-y"]],
-     ["post front-right", "z", W-ext, 0,     0, H, ["+y", "+x"]],
-     ["post back-left",   "z", 0,     D-ext, 0, H, ["-y", "+x"]],
-     ["post back-right",  "z", W-ext, D-ext, 0, H, ["-y", "-x"]]],
-    // Bottom perimeter: panel bottom edges (+z); front rail has no panel, A is the minimum
-    [["bottom front rail", "x", ext, 0,     0, inner_w, ["+z"]],
-     ["bottom back rail",  "x", ext, D-ext, 0, inner_w, ["+z"]]],
-    [for (x = [0, W-ext]) ["bottom side rail", "y", x, ext, 0, inner_d, ["+z"]]],
-    // Top perimeter: cooktop bolts (+z), panel top edges (-z)
-    [["top front rail", "x", ext, 0,     H-ext, inner_w, ["+z"]],
-     ["top back rail",  "x", ext, D-ext, H-ext, inner_w, ["+z", "-z"]]],
-    [for (x = [0, W-ext]) ["top side rail", "y", x, ext, H-ext, inner_d, ["+z", "-z"]]],
-    // Shelf side rails: side panels above (+z) and below (-z)
-    [for (i = [1 : n_bays - 1], x = [0, W-ext])
-        ["shelf side rail", "y", x, ext, level_z(i), inner_d, ["+z", "-z"]]],
-    // Crossbars: shelf/cooktop bolts (+z), divider brackets (-z) where the bay below is divided
-    [for (i = [0 : n_bays], y = crossbar_ys)
-        ["crossbar", "x", ext, y, level_z(i), inner_w, divided_below(i) ? ["+z", "-z"] : ["+z"]]]
+    [for (x = [0, W-ext], y = [0, D-ext]) ["post", "z", x, y, 0, H]],
+    // Bottom + top perimeter rails
+    [for (z = [0, H-ext], y = [0, D-ext]) ["front/back rail", "x", ext, y, z, inner_w]],
+    [for (z = [0, H-ext], x = [0, W-ext]) ["side rail", "y", x, ext, z, inner_d]],
+    // Shelf side rails
+    [for (i = [1 : n_bays - 1], x = [0, W-ext]) ["shelf side rail", "y", x, ext, level_z(i), inner_d]]
 );
 
-// ---------- Frame ----------
-module frame() for (m = members) bar(m[1], m[2], m[3], m[4], m[5], m[6]);
+module frame() for (m = members) bar(m[1], m[2], m[3], m[4], m[5]);
 
 // ---------- Plywood ----------
-module shelf(z) color("BurlyWood") translate([ext, ext, z + ext]) cube([inner_w, inner_d, shelf_t]);
+module shelf(z) color("BurlyWood") translate([panel_gap, ext, z + ext]) cube([shelf_w, inner_d, shelf_t]);
+module base() color("BurlyWood") translate([ext, 0, ext]) cube([inner_w, base_d, shelf_t]);
 
-// Full-footprint cooktop on the top rails + crossbars, countersunk bolts, flush surface
+// Angle brackets: bolted into a rail's inner slot, top leg flush with the rail top,
+// screwed up into the plywood
+module shelf_brackets() color("DimGray") {
+    t = bracket[2];
+    for (i = [1 : n_bays - 1], y = bracket_ys) {
+        z = level_z(i) + ext;
+        translate([ext, y - bracket[0]/2, z - bracket[1]])  cube([t, bracket[0], bracket[1]]);
+        translate([ext, y - bracket[0]/2, z - t])           cube([bracket[1], bracket[0], t]);
+        translate([W - ext - t, y - bracket[0]/2, z - bracket[1]]) cube([t, bracket[0], bracket[1]]);
+        translate([W - ext - bracket[1], y - bracket[0]/2, z - t]) cube([bracket[1], bracket[0], t]);
+    }
+    // Base: back edge held by brackets on the bottom back rail's inner face
+    for (x = [W/4, 3*W/4]) {
+        translate([x - bracket[0]/2, D - ext - t, 0])                cube([bracket[0], t, ext]);
+        translate([x - bracket[0]/2, D - ext - bracket[1], ext - t]) cube([bracket[0], bracket[1], t]);
+    }
+}
+
+// Full-footprint cooktop on the top perimeter rails, countersunk bolts, flush surface
 module cooktop() color("BurlyWood") translate([0, 0, H]) cube([W, D, top_t]);
 
 function side_h(i) = level_z(i + 1) - level_z(i) - ext + 2*slot_engage;
+back_w = inner_w + 2*slot_engage;
+back_h = H - 2*ext + 2*slot_engage;
+side_d = inner_d + 2*slot_engage;
 
 module panels() {
     e = slot_engage;
     c = ext/2 - panel_t/2;   // panel sits on the slot centerline
     color("Wheat") {
         // Back (one piece; no back shelf rails)
-        translate([ext - e, D - ext + c, ext - e]) cube([inner_w + 2*e, panel_t, H - 2*ext + 2*e]);
+        translate([ext - e, D - ext + c, ext - e]) cube([back_w, panel_t, back_h]);
         // Sides, one panel per bay between shelf rails
         for (x = [c, W - ext + c], i = [0 : n_bays - 1])
-            translate([x, ext - e, level_z(i) + ext - e]) cube([panel_t, inner_d + 2*e, side_h(i)]);
+            translate([x, ext - e, level_z(i) + ext - e]) cube([panel_t, side_d, side_h(i)]);
     }
 }
 
-// Each divider stands on its shelf, fixed with small L-brackets to the shelf
-// and screwed into the cooktop crossbars above.
+// Each divider stands on its shelf, fixed with small L-brackets to the plywood
+// below and above.
 function psum(v, n) = n <= 0 ? 0 : v[n - 1] + psum(v, n - 1);
 function n_dividers(d) = is_list(d) ? len(d) : d;
 function comp_widths(d) =
@@ -202,17 +212,17 @@ module bay_dividers() color("Wheat")
 
 // ---------- Door (swing, pivot hinges at left, draw latch at right) ----------
 module door() {
-    latch_z = H/2 - 0.4;
+    latch_z = H/2 - 10;
     rotate([0, 0, -door_angle]) {
         color("Tan") translate([door_gap, -door_t, door_gap])
             cube([W - 2*door_gap, door_t, H - 2*door_gap]);
         // Draw latch body on the door face
-        color("DimGray") translate([W - 1.6, -door_t - 0.2, latch_z]) cube([1.4, 0.2, 0.8]);
+        color("DimGray") translate([W - 40, -door_t - 5, latch_z]) cube([35, 5, 20]);
     }
     // Pivot hinge pins, top and bottom
-    color("DimGray") for (z = [0, H - 1]) translate([0, 0, z]) cylinder(d=0.3, h=1, $fn=24);
+    color("DimGray") for (z = [0, H - ext]) translate([0, 0, z]) cylinder(d=6, h=ext, $fn=24);
     // Latch keeper on the right post's side face
-    color("DimGray") translate([W, 0.1, latch_z]) cube([0.15, 0.7, 0.8]);
+    color("DimGray") translate([W, 2, latch_z]) cube([4, 16, 20]);
 }
 
 // ---------- Stored items (ghosted) ----------
@@ -246,7 +256,9 @@ module items() {
 // ---------- Assembly ----------
 module chuckbox() {
     frame();
-    for (i = [0 : n_bays - 1]) shelf(level_z(i));
+    base();
+    for (i = [1 : n_bays - 1]) shelf(level_z(i));
+    shelf_brackets();
     cooktop();
     bay_dividers();
     if (show_panels) panels();
@@ -256,21 +268,31 @@ module chuckbox() {
 
 chuckbox();
 
-// ---------- Cut list ----------
-echo(str("Overall: ", frac(W), " x ", frac(D), " x ", frac(H + top_t), " (frame ", frac(H), " + cooktop ", frac(top_t), ")"));
-echo(str("Bays (bottom->top): ", [for (b = bays) frac(b)]));
-// Extrusion grouped by length and slot type
-member_types = [for (m = members) [m[5], slot_type(slot_mask(m[1], m[6]))]];
-for (m = members) assert(on_grid(m[5]), str(m[0], " length ", m[5], "\" is not on the 1/16\" grid"));
-for (L = [H, inner_w, inner_d], T = ["A", "B", "C", "D", "STD"])
-    let (n = len([for (t = member_types) if (t[0] == L && t[1] == T) 1]))
-    if (n > 0) echo(str("1010-", T, ": ", n, " x ", frac(L)));
-echo(str("1/2\" ply shelves: ", n_bays, " x ", frac(inner_w), " x ", frac(inner_d)));
-echo(str("1/2\" ply cooktop: 1 x ", frac(W), " x ", frac(D)));
-echo(str("1/4\" ply back: 1 x ", frac(inner_w + 2*slot_engage), " x ", frac(H - 2*ext + 2*slot_engage)));
-echo(str("1/4\" ply sides (bottom->top, 2 each): ", frac(inner_d + 2*slot_engage), " x ",
-         [for (i = [0 : n_bays - 1]) frac(side_h(i))]));
+// ---------- Cut list (mm; extrusion also in inches for the supplier) ----------
+for (m = members) assert(on_grid(m[5]), str(m[0], " length ", m[5], " mm is not on the 1/16\" grid"));
+echo(str("Overall: ", mm(W), " x ", mm(D), " x ", mm(H + top_t), " mm (frame ", mm(H), " + cooktop ", mm(top_t), ")"));
+echo(str("Bays (bottom->top): ", [for (b = bays) mm(b)], " mm"));
+for (L = [H, inner_w, inner_d])
+    let (n = len([for (m = members) if (m[5] == L) 1]))
+    echo(str("2020: ", n, " x ", mm(L), " mm (", in_str(L), ")"));
+echo(str("12 mm ply base: 1 x ", mm(inner_w), " x ", mm(base_d)));
+echo(str("12 mm ply shelves: ", n_bays - 1, " x ", mm(shelf_w), " x ", mm(inner_d)));
+echo(str("12 mm ply cooktop: 1 x ", mm(W), " x ", mm(D)));
+echo(str("6 mm ply back: 1 x ", mm(back_w), " x ", mm(back_h)));
+echo(str("6 mm ply sides (bottom->top, 2 each): ", mm(side_d), " x ", [for (i = [0 : n_bays - 1]) mm(side_h(i))]));
 for (i = [0 : n_bays - 1]) if (n_dividers(dividers[i]) > 0)
-    echo(str("1/4\" ply dividers, bay ", i, ": ", n_dividers(dividers[i]), " x ", frac(inner_d), " x ", frac(bays[i]),
-             " -> compartment widths ", [for (w = comp_widths(dividers[i])) frac(w)]));
-echo(str("Door: 1 x ", frac(W - 2*door_gap), " x ", frac(H - 2*door_gap), " x ", frac(door_t)));
+    echo(str("6 mm ply dividers, bay ", i, ": ", n_dividers(dividers[i]), " x ", mm(inner_d), " x ", mm(bays[i]),
+             " -> compartment widths ", [for (w = comp_widths(dividers[i])) mm(w)]));
+echo(str("6 mm ply door: 1 x ", mm(W - 2*door_gap), " x ", mm(H - 2*door_gap)));
+
+// ---------- Weight estimate (kg) ----------
+al_m   = vsum([for (m = members) m[5]], len(members)) / 1000;
+ply12  = (inner_w*base_d + (n_bays - 1)*shelf_w*inner_d + W*D) / 1e6 * shelf_t/1000 * ply_kg_m3;
+div_a  = vsum([for (i = [0 : n_bays - 1]) n_dividers(dividers[i]) * inner_d * bays[i]], n_bays);
+ply6   = (back_w*back_h + 2*side_d*vsum([for (i = [0 : n_bays - 1]) side_h(i)], n_bays) + div_a
+          + (W - 2*door_gap)*(H - 2*door_gap)) / 1e6 * panel_t/1000 * ply_kg_m3;
+dry_kg = al_m*al_kg_m + ply12 + ply6 + hw_kg;
+echo(str("Weight: extrusion ", mm(al_m*al_kg_m), " kg (", mm(al_m), " m), 12 mm ply ", mm(ply12),
+         " kg, 6 mm ply ", mm(ply6), " kg, hardware ", mm(hw_kg), " kg"));
+echo(str("Dry ", mm(dry_kg), " kg (", mm(dry_kg/LB), " lb), gross ", mm(dry_kg + item_kg),
+         " kg (", mm((dry_kg + item_kg)/LB), " lb) + bin"));
